@@ -59,6 +59,52 @@ auth:
         repeat_password_label: "Répétez le mot de passe"
         submit: "Enregistrer"
 
+equipment:
+    title: "Équipements"
+    create: "Créer"
+    generate: "Générer une liste"
+    quantity: "Quantité"
+    category: "Catégorie"
+    status:
+        in_progress: "En cours"
+        complete: "Terminé"
+    actions:
+        open_menu: "Ouvrir le menu"
+        edit: "Modifier"
+        delete: "Supprimer"
+        move_up: "Monter"
+        move_down: "Descendre"
+        mark_complete: "Marquer comme terminé"
+        mark_in_progress: "Marquer comme en cours"
+        reorder: "Réorganiser"
+        select: "Sélectionner l'équipement"
+    bulk:
+        selected_label: "sélectionné(s)"
+        delete: "Supprimer la sélection"
+        mark_all_in_progress: "Tout marquer en cours"
+        mark_all_complete: "Tout marquer terminé"
+    confirm:
+        delete_title: "Supprimer cet équipement ?"
+        delete_text: "Cette action est irréversible."
+        delete_bulk_title: "Supprimer les équipements sélectionnés ?"
+        complete_bulk_title: "Marquer comme terminés les équipements sélectionnés ?"
+        in_progress_bulk_title: "Marquer comme en cours les équipements sélectionnés ?"
+        confirm: "Oui"
+        cancel: "Annuler"
+    toast:
+        order_updated: "Ordre mis à jour"
+        deleted: "Équipement supprimé"
+        deleted_bulk: "Équipements supprimés"
+        status_changed: "Statut mis à jour"
+        moved: "Élément déplacé"
+        edit_todo: "Édition à venir"
+        generate_todo: "Génération à venir"
+        create_todo: "Création à venir"
+    empty:
+        title: "Aucun équipement"
+        text: "Commencez par créer un équipement."
+        cta: "Nouvel équipement"
+
 flash:
     email_verified: "Votre adresse e-mail a été vérifiée. Vous pouvez maintenant vous connecter."
 

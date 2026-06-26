@@ -11,7 +11,7 @@ SYMFONY  = $(PHP) bin/console
 
 # Misc
 .DEFAULT_GOAL = help
-.PHONY        : help build up start down logs sh composer vendor sf cc test lint lint-fix
+.PHONY        : help build up start down logs sh composer vendor sf cc test lint lint-fix reset-database reset-database-hard
 
 ## —— 🎵 🐳 The Symfony Docker Makefile 🐳 🎵 ——————————————————————————————————
 help: ## Outputs this help screen
@@ -104,6 +104,11 @@ migration: ## Generate a new migration
 
 migrate: ## Run database migrations
 	@$(SYMFONY) doctrine:migrations:migrate
+
+reset-database: ## Last resort: wipe the Docker volumes, restart the stack and replay migrations
+	@$(DOCKER_COMP) down --volumes
+	@$(DOCKER_COMP) up --detach --wait
+	@$(SYMFONY) doctrine:migrations:migrate --no-interaction
 
 entity: ## Create a new entity in the chosen domain
 	@$(SYMFONY) do:entity

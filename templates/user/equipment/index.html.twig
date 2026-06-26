@@ -1,5 +1,248 @@
 {% extends 'user/_layout/index.html.twig' %}
 
 {% block content %}
-    aaa
+
+{# Header : créer, générer une liste, et barre d'actions groupées (suppression / changement de statut) #}
+<div class="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between dark:border-white/10">
+  <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ 'equipment.title'|trans }}</h3>
+  <div class="mt-3 flex sm:mt-0 sm:ml-4">
+    <button id="generate-list" type="button" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20">{{ 'equipment.generate'|trans }}</button>
+    <button id="create-equipment" type="button" class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:shadow-none dark:hover:bg-indigo-400 dark:focus-visible:outline-indigo-500">{{ 'equipment.create'|trans }}</button>
+  </div>
+</div>
+
+{# Barre d'actions groupées : masquée tant qu'aucune checkbox n'est cochée #}
+<div id="bulk-bar" hidden class="mt-4 flex flex-col gap-3 rounded-md bg-gray-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between dark:bg-white/5">
+  <p class="text-sm font-medium text-gray-700 dark:text-gray-300"><span id="bulk-count">0</span> {{ 'equipment.bulk.selected_label'|trans }}</p>
+  <div class="flex flex-wrap gap-x-2 gap-y-2">
+    <button id="bulk-in-progress" type="button" class="inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20">{{ 'equipment.bulk.mark_all_in_progress'|trans }}</button>
+    <button id="bulk-complete" type="button" class="inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20">{{ 'equipment.bulk.mark_all_complete'|trans }}</button>
+    <button id="bulk-delete" type="button" class="inline-flex items-center rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-red-500 dark:bg-red-500 dark:hover:bg-red-400">{{ 'equipment.bulk.delete'|trans }}</button>
+  </div>
+</div>
+
+<ul id="equipment-list" role="list" class="mt-2 divide-y divide-gray-100 dark:divide-white/5">
+  <li data-id="1" data-status="in_progress" class="flex items-center justify-between gap-x-6 py-5">
+    <div class="flex min-w-0 items-center gap-x-3">
+      {# Poignée de réorganisation (drag & drop via SortableJS) #}
+      <button type="button" class="drag-handle cursor-move touch-none text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" aria-label="{{ 'equipment.actions.reorder'|trans }}">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5">
+          <path d="M7 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM7 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM7 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM13 4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM13 10a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM13 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
+        </svg>
+      </button>
+      {# Checkbox de sélection groupée #}
+      <input type="checkbox" class="equipment-select size-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600 dark:border-white/10 dark:bg-white/5" aria-label="{{ 'equipment.actions.select'|trans }}" />
+      <div class="min-w-0">
+        <div class="flex items-start gap-x-3">
+          <p class="text-sm/6 font-semibold text-gray-900 dark:text-white">Tente 4 places</p>
+          <p class="status-badge mt-0.5 rounded-md bg-gray-50 px-1.5 py-0.5 text-xs font-medium text-gray-600 inset-ring inset-ring-gray-500/10 dark:bg-gray-400/10 dark:text-gray-400 dark:inset-ring-gray-400/20">{{ 'equipment.status.in_progress'|trans }}</p>
+        </div>
+        <div class="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500 dark:text-gray-400">
+          <p class="whitespace-nowrap">{{ 'equipment.quantity'|trans }} : 12</p>
+          <svg viewBox="0 0 2 2" class="size-0.5 fill-current">
+            <circle r="1" cx="1" cy="1" />
+          </svg>
+          <p class="truncate">{{ 'equipment.category'|trans }} : Tentes</p>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-none items-center gap-x-4">
+      {# Bascule rapide du statut #}
+      <button type="button" class="status-toggle rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 dark:bg-white/10 dark:text-white dark:shadow-none dark:inset-ring-white/5 dark:hover:bg-white/20">{{ 'equipment.actions.mark_complete'|trans }}</button>
+      {# Menu : modifier, monter d'un cran, descendre d'un cran, supprimer #}
+      <el-dropdown class="relative flex-none">
+        <button class="relative block text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+          <span class="absolute -inset-2.5"></span>
+          <span class="sr-only">{{ 'equipment.actions.open_menu'|trans }}</span>
+          <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
+            <path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM11.5 15.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
+          </svg>
+        </button>
+        <el-menu anchor="bottom end" popover class="w-40 origin-top-right rounded-md bg-white py-2 shadow-lg outline-1 outline-gray-900/5 transition transition-discrete [--anchor-gap:--spacing(2)] data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in dark:bg-gray-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
+          <button type="button" class="action-edit block w-full px-3 py-1 text-left text-sm/6 text-gray-900 focus:bg-gray-50 focus:outline-hidden dark:text-white dark:focus:bg-white/5">{{ 'equipment.actions.edit'|trans }}</button>
+          <button type="button" class="action-move-up block w-full px-3 py-1 text-left text-sm/6 text-gray-900 focus:bg-gray-50 focus:outline-hidden dark:text-white dark:focus:bg-white/5">{{ 'equipment.actions.move_up'|trans }}</button>
+          <button type="button" class="action-move-down block w-full px-3 py-1 text-left text-sm/6 text-gray-900 focus:bg-gray-50 focus:outline-hidden dark:text-white dark:focus:bg-white/5">{{ 'equipment.actions.move_down'|trans }}</button>
+          <button type="button" class="action-delete block w-full px-3 py-1 text-left text-sm/6 text-red-600 focus:bg-gray-50 focus:outline-hidden dark:text-red-400 dark:focus:bg-white/5">{{ 'equipment.actions.delete'|trans }}</button>
+        </el-menu>
+      </el-dropdown>
+    </div>
+  </li>
+</ul>
+
+{# État vide : affiché quand il ne reste plus aucun équipement #}
+<div id="empty-state" hidden class="mt-10 text-center">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" class="mx-auto size-12 text-gray-400 dark:text-gray-500">
+    <path d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+  <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{{ 'equipment.empty.title'|trans }}</h3>
+  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ 'equipment.empty.text'|trans }}</p>
+  <div class="mt-6">
+    <button id="empty-create" type="button" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:shadow-none dark:hover:bg-indigo-400 dark:focus-visible:outline-indigo-500">
+      <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="mr-1.5 -ml-0.5 size-5">
+        <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+      </svg>
+      {{ 'equipment.empty.cta'|trans }}
+    </button>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1/Sortable.min.js"></script>
+<script>
+  const I18N = {
+    statusInProgress: {{ 'equipment.status.in_progress'|trans|json_encode|raw }},
+    statusComplete: {{ 'equipment.status.complete'|trans|json_encode|raw }},
+    markComplete: {{ 'equipment.actions.mark_complete'|trans|json_encode|raw }},
+    markInProgress: {{ 'equipment.actions.mark_in_progress'|trans|json_encode|raw }},
+    confirmYes: {{ 'equipment.confirm.confirm'|trans|json_encode|raw }},
+    confirmCancel: {{ 'equipment.confirm.cancel'|trans|json_encode|raw }},
+    deleteTitle: {{ 'equipment.confirm.delete_title'|trans|json_encode|raw }},
+    deleteText: {{ 'equipment.confirm.delete_text'|trans|json_encode|raw }},
+    deleteBulkTitle: {{ 'equipment.confirm.delete_bulk_title'|trans|json_encode|raw }},
+    completeBulkTitle: {{ 'equipment.confirm.complete_bulk_title'|trans|json_encode|raw }},
+    inProgressBulkTitle: {{ 'equipment.confirm.in_progress_bulk_title'|trans|json_encode|raw }},
+    toastOrderUpdated: {{ 'equipment.toast.order_updated'|trans|json_encode|raw }},
+    toastDeleted: {{ 'equipment.toast.deleted'|trans|json_encode|raw }},
+    toastDeletedBulk: {{ 'equipment.toast.deleted_bulk'|trans|json_encode|raw }},
+    toastStatusChanged: {{ 'equipment.toast.status_changed'|trans|json_encode|raw }},
+    toastMoved: {{ 'equipment.toast.moved'|trans|json_encode|raw }},
+    toastEditTodo: {{ 'equipment.toast.edit_todo'|trans|json_encode|raw }},
+    toastGenerateTodo: {{ 'equipment.toast.generate_todo'|trans|json_encode|raw }},
+    toastCreateTodo: {{ 'equipment.toast.create_todo'|trans|json_encode|raw }},
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const list = document.getElementById('equipment-list');
+    const emptyState = document.getElementById('empty-state');
+    const bulkBar = document.getElementById('bulk-bar');
+    const bulkCount = document.getElementById('bulk-count');
+
+    const BADGE_BASE = 'status-badge mt-0.5 rounded-md px-1.5 py-0.5 text-xs font-medium';
+    const STATUS = {
+      in_progress: { label: I18N.statusInProgress, toggle: I18N.markComplete, cls: 'bg-gray-50 text-gray-600 inset-ring inset-ring-gray-500/10 dark:bg-gray-400/10 dark:text-gray-400 dark:inset-ring-gray-400/20' },
+      complete: { label: I18N.statusComplete, toggle: I18N.markInProgress, cls: 'bg-green-50 text-green-700 inset-ring inset-ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:inset-ring-green-500/20' },
+    };
+
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+    });
+    const toast = (title, icon = 'success') => Toast.fire({ icon, title });
+
+    const confirmDialog = (title, text) => Swal.fire({
+      title,
+      text,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: I18N.confirmYes,
+      cancelButtonText: I18N.confirmCancel,
+      confirmButtonColor: '#dc2626',
+    }).then((r) => r.isConfirmed);
+
+    const applyStatus = (li, state) => {
+      li.dataset.status = state;
+      const badge = li.querySelector('.status-badge');
+      badge.className = BADGE_BASE + ' ' + STATUS[state].cls;
+      badge.textContent = STATUS[state].label;
+      const toggle = li.querySelector('.status-toggle');
+      if (toggle) toggle.textContent = STATUS[state].toggle;
+    };
+
+    // Synchronise badge et libellé du bouton avec le statut initial de chaque item
+    list.querySelectorAll('li').forEach((li) => applyStatus(li, li.dataset.status));
+
+    const checkEmpty = () => {
+      const hasItems = list.querySelectorAll('li').length > 0;
+      list.hidden = !hasItems;
+      emptyState.hidden = hasItems;
+      if (!hasItems) {
+        bulkBar.hidden = true;
+      }
+    };
+
+    const refreshBulkBar = () => {
+      const count = list.querySelectorAll('.equipment-select:checked').length;
+      bulkCount.textContent = count;
+      bulkBar.hidden = count === 0;
+    };
+
+    // Réorganisation par drag & drop
+    Sortable.create(list, {
+      handle: '.drag-handle',
+      animation: 150,
+      onEnd: (evt) => {
+        if (evt.oldIndex !== evt.newIndex) {
+          toast(I18N.toastOrderUpdated, 'info');
+        }
+      },
+    });
+
+    // Actions sur chaque équipement (délégation)
+    list.addEventListener('click', async (e) => {
+      const li = e.target.closest('li');
+      if (!li) return;
+
+      if (e.target.closest('.status-toggle')) {
+        applyStatus(li, li.dataset.status === 'in_progress' ? 'complete' : 'in_progress');
+        toast(I18N.toastStatusChanged);
+      } else if (e.target.closest('.action-edit')) {
+        toast(I18N.toastEditTodo, 'info');
+      } else if (e.target.closest('.action-move-up')) {
+        const prev = li.previousElementSibling;
+        if (prev) { list.insertBefore(li, prev); toast(I18N.toastMoved, 'info'); }
+      } else if (e.target.closest('.action-move-down')) {
+        const next = li.nextElementSibling;
+        if (next) { list.insertBefore(next, li); toast(I18N.toastMoved, 'info'); }
+      } else if (e.target.closest('.action-delete')) {
+        if (await confirmDialog(I18N.deleteTitle, I18N.deleteText)) {
+          li.remove();
+          toast(I18N.toastDeleted);
+          refreshBulkBar();
+          checkEmpty();
+        }
+      }
+    });
+
+    list.addEventListener('change', (e) => {
+      if (e.target.classList.contains('equipment-select')) {
+        refreshBulkBar();
+      }
+    });
+
+    // Suppression groupée
+    document.getElementById('bulk-delete').addEventListener('click', async () => {
+      const selected = list.querySelectorAll('.equipment-select:checked');
+      if (!selected.length) return;
+      if (await confirmDialog(I18N.deleteBulkTitle, I18N.deleteText)) {
+        selected.forEach((cb) => cb.closest('li').remove());
+        toast(I18N.toastDeletedBulk);
+        refreshBulkBar();
+        checkEmpty();
+      }
+    });
+
+    // Changement de statut groupé : tout marquer en cours / tout marquer terminé
+    const bulkSetStatus = async (state, title) => {
+      const selected = list.querySelectorAll('.equipment-select:checked');
+      if (!selected.length) return;
+      if (await confirmDialog(title, '')) {
+        selected.forEach((cb) => applyStatus(cb.closest('li'), state));
+        toast(I18N.toastStatusChanged);
+      }
+    };
+    document.getElementById('bulk-in-progress').addEventListener('click', () => bulkSetStatus('in_progress', I18N.inProgressBulkTitle));
+    document.getElementById('bulk-complete').addEventListener('click', () => bulkSetStatus('complete', I18N.completeBulkTitle));
+
+    document.getElementById('generate-list').addEventListener('click', () => toast(I18N.toastGenerateTodo, 'info'));
+    document.getElementById('create-equipment').addEventListener('click', () => toast(I18N.toastCreateTodo, 'info'));
+    document.getElementById('empty-create').addEventListener('click', () => toast(I18N.toastCreateTodo, 'info'));
+  });
+</script>
 {% endblock %}

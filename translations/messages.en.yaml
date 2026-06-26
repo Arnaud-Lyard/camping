@@ -59,6 +59,52 @@ auth:
         repeat_password_label: "Repeat password"
         submit: "Save"
 
+equipment:
+    title: "Equipment"
+    create: "Create"
+    generate: "Generate a list"
+    quantity: "Quantity"
+    category: "Category"
+    status:
+        in_progress: "In progress"
+        complete: "Complete"
+    actions:
+        open_menu: "Open menu"
+        edit: "Edit"
+        delete: "Delete"
+        move_up: "Move up"
+        move_down: "Move down"
+        mark_complete: "Mark as complete"
+        mark_in_progress: "Mark as in progress"
+        reorder: "Reorder"
+        select: "Select equipment"
+    bulk:
+        selected_label: "selected"
+        delete: "Delete selection"
+        mark_all_in_progress: "Mark all in progress"
+        mark_all_complete: "Mark all complete"
+    confirm:
+        delete_title: "Delete this equipment?"
+        delete_text: "This action cannot be undone."
+        delete_bulk_title: "Delete the selected equipment?"
+        complete_bulk_title: "Mark the selected equipment as complete?"
+        in_progress_bulk_title: "Mark the selected equipment as in progress?"
+        confirm: "Yes"
+        cancel: "Cancel"
+    toast:
+        order_updated: "Order updated"
+        deleted: "Equipment deleted"
+        deleted_bulk: "Equipment deleted"
+        status_changed: "Status updated"
+        moved: "Item moved"
+        edit_todo: "Editing coming soon"
+        generate_todo: "Generation coming soon"
+        create_todo: "Creation coming soon"
+    empty:
+        title: "No equipment"
+        text: "Get started by creating an equipment item."
+        cta: "New equipment"
+
 flash:
     email_verified: "Your email address has been verified. You can now log in."
 
