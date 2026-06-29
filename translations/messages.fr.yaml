@@ -11,6 +11,7 @@ nav:
     calendar: "Calendrier"
     documents: "Documents"
     reports: "Rapports"
+    settings: "Paramètres"
     your_teams: "Vos équipes"
     your_profile: "Votre profil"
     open_sidebar: "Ouvrir la barre latérale"
@@ -128,6 +129,15 @@ battery:
         save: "Enregistrer"
     flash:
         saved: "Vos préférences de rappel ont été enregistrées."
+
+settings:
+    title: "Paramètres"
+    description: "Gérez vos préférences. La langue choisie s'applique à tout votre espace."
+    form:
+        language_label: "Langue"
+        save: "Enregistrer"
+    flash:
+        saved: "Vos préférences ont été enregistrées."
 
 flash:
     email_verified: "Votre adresse e-mail a été vérifiée. Vous pouvez maintenant vous connecter."
