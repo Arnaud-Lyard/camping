@@ -5,6 +5,7 @@ page:
 nav:
     dashboard: "Dashboard"
     equipment: "Equipment"
+    battery: "Battery"
     team: "Team"
     projects: "Projects"
     calendar: "Calendar"
@@ -115,6 +116,19 @@ equipment:
         text: "Get started by creating an equipment item."
         cta: "New equipment"
 
+battery:
+    title: "Battery reminder"
+    description: "Get an email reminder to recharge your caravan battery."
+    form:
+        active_label: "Enable reminders"
+        active_help: "Disabled by default. Once enabled, you'll receive an email at the chosen frequency."
+        frequency_label: "Frequency"
+        frequency_unit: "day(s)"
+        frequency_help: "Number of days between each reminder."
+        save: "Save"
+    flash:
+        saved: "Your reminder preferences have been saved."
+
 flash:
     email_verified: "Your email address has been verified. You can now log in."
 
@@ -133,4 +147,9 @@ email:
         link: "Reset my password"
         expiration: "This link will expire in %duration%."
         ignore: "If you didn't request this, you can safely ignore this email."
+        signature: "See you soon!"
+    battery_reminder:
+        subject: "Time to recharge your caravan battery"
+        heading: "Charging reminder"
+        intro: "It's time to recharge your caravan battery. You receive this reminder every %days% day(s)."
         signature: "See you soon!"

@@ -112,3 +112,6 @@ reset-database: ## Last resort: wipe the Docker volumes, restart the stack and r
 
 entity: ## Create a new entity in the chosen domain
 	@$(SYMFONY) do:entity
+
+battery-reminders: ## Send battery recharge reminders that are due
+	@$(SYMFONY) app:battery:send-reminders

@@ -97,11 +97,14 @@ final class EquipmentController extends AbstractController
             return $this->formErrorsResponse($form);
         }
 
+        // Push existing items down so the new one takes the top slot (ordre 0).
+        $repository->shiftDown($user);
+
         $now = new \DateTimeImmutable();
         $equipment
             ->setOwner($user)
             ->setStatus(EquipmentStatus::InProgress)
-            ->setOrdre($repository->getTopOrdre($user))
+            ->setOrdre(0)
             ->setCreatedAt($now)
             ->setUpdatedAt($now);
         $em->persist($equipment);
@@ -117,20 +120,22 @@ final class EquipmentController extends AbstractController
 
         $user = $this->currentUser();
         $names = self::PRESET_LISTS[$request->getLocale()] ?? self::PRESET_LISTS["fr"];
-        $ordre = $repository->getTopOrdre($user);
+
+        // Free the top slots (0..count-1) for the generated items.
+        $repository->shiftDown($user, \count($names));
 
         $rows = [];
-        // Reverse so the first preset item ends up at the very top of the list.
-        foreach (array_reverse($names) as $name) {
-            $equipment = $this->newEquipment($name, $ordre--, $user);
+        $ordre = 0;
+        foreach ($names as $name) {
+            $equipment = $this->newEquipment($name, $ordre++, $user);
             $em->persist($equipment);
             $rows[] = $equipment;
         }
         $em->flush();
 
-        // Return rows in display order (top first).
+        // Rows are already in display order (first preset on top).
         $html = "";
-        foreach (array_reverse($rows) as $equipment) {
+        foreach ($rows as $equipment) {
             $html .= $this->renderView("user/equipment/_row.html.twig", ["equipment" => $equipment]);
         }
 

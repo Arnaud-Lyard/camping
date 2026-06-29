@@ -360,10 +360,11 @@
       } else {
         list.insertAdjacentHTML('afterbegin', html);
         initRow(list.firstElementChild);
+        reindexOrdre();
         toast(I18N.toastCreated);
       }
       cancelBtn.click();
-      sortList(); applyFilter(); refreshBulkBar(); updateCounts(); checkEmpty();
+      applyFilter(); refreshBulkBar(); updateCounts(); checkEmpty();
     };
 
     form.addEventListener('submit', async (e) => {
@@ -382,7 +383,7 @@
         const { html } = await res.json();
         list.insertAdjacentHTML('afterbegin', html);
         list.querySelectorAll('li').forEach(initRow);
-        sortList(); applyFilter(); updateCounts(); checkEmpty(); toast(I18N.toastGenerated);
+        reindexOrdre(); applyFilter(); updateCounts(); checkEmpty(); toast(I18N.toastGenerated);
       } catch { toast(I18N.toastError, 'error'); }
     });
   });

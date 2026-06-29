@@ -43,17 +43,20 @@ class EquipmentRepository extends ServiceEntityRepository
     }
 
     /**
-     * Smallest "ordre" among the owner's items so a new one floats to the top.
+     * Shift every item of the owner down by $by positions, freeing the top
+     * slots (0..$by-1) for newly created items. Keeps "ordre" a positive,
+     * contiguous sequence where 0 is the top of the list.
      */
-    public function getTopOrdre(User $owner): int
+    public function shiftDown(User $owner, int $by = 1): void
     {
-        $min = $this->createQueryBuilder("e")
-            ->select("MIN(e.ordre)")
-            ->andWhere("e.owner = :owner")
+        $this->getEntityManager()
+            ->createQueryBuilder()
+            ->update(Equipment::class, "e")
+            ->set("e.ordre", "e.ordre + :by")
+            ->where("e.owner = :owner")
+            ->setParameter("by", $by)
             ->setParameter("owner", $owner)
             ->getQuery()
-            ->getSingleScalarResult();
-
-        return null === $min ? 0 : ((int) $min) - 1;
+            ->execute();
     }
 }

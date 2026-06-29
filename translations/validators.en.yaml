@@ -11,3 +11,7 @@ email:
 equipment:
     validation:
         name_required: "Please enter a name."
+battery:
+    validation:
+        frequency_positive: "The frequency must be a positive number of days."
+        frequency_range: "The frequency must be between {{ min }} and {{ max }} days."

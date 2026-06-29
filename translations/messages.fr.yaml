@@ -5,6 +5,7 @@ page:
 nav:
     dashboard: "Tableau de bord"
     equipment: "Équipements"
+    battery: "Batterie"
     team: "Équipe"
     projects: "Projets"
     calendar: "Calendrier"
@@ -115,6 +116,19 @@ equipment:
         text: "Commencez par créer un équipement."
         cta: "Nouvel équipement"
 
+battery:
+    title: "Rappel de batterie"
+    description: "Recevez un rappel par e-mail pour penser à recharger la batterie de votre caravane."
+    form:
+        active_label: "Activer les rappels"
+        active_help: "Désactivé par défaut. Une fois activé, vous recevrez un e-mail selon la fréquence choisie."
+        frequency_label: "Fréquence"
+        frequency_unit: "jour(s)"
+        frequency_help: "Nombre de jours entre chaque rappel."
+        save: "Enregistrer"
+    flash:
+        saved: "Vos préférences de rappel ont été enregistrées."
+
 flash:
     email_verified: "Votre adresse e-mail a été vérifiée. Vous pouvez maintenant vous connecter."
 
@@ -133,4 +147,9 @@ email:
         link: "Réinitialiser mon mot de passe"
         expiration: "Ce lien expirera dans %duration%."
         ignore: "Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail."
+        signature: "À bientôt !"
+    battery_reminder:
+        subject: "Pensez à recharger la batterie de votre caravane"
+        heading: "Rappel de recharge"
+        intro: "C'est le moment de recharger la batterie de votre caravane. Vous recevez ce rappel tous les %days% jour(s)."
         signature: "À bientôt !"
